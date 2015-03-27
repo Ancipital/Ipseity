@@ -6,17 +6,14 @@ module Ipseity.Init.Precept
   ) where
 --------------------------------------------------------------------------------
 
-import           Control.Applicative
-import           Data.Either
-import           Data.Maybe
-import qualified Data.HashMap.Strict as M
+import           Control.Applicative ((<*>), (<$>))
+import           Data.Either         (rights)
+import qualified Data.HashMap.Lazy   as M (lookup)
 import           Data.Text           (Text)
 import qualified Data.Text           as T
 import qualified Data.Text.IO        as D (readFile, putStrLn)
 import           Text.Toml           (parseTomlDoc)
 import           Text.Toml.Types
-import           System.IO           (putStrLn)
-import           System.Exit
 import           System.Directory    (doesFileExist)
 import           Ipseity.Types
 
@@ -73,9 +70,9 @@ parseConfWith file = do
 getvals c = do
   let keys = ["nickname", "username", "realname"]
 
-  -- | This returns [Just (NTValue (VString "Ipsy"))
+  -- | This returns, for example
+  -- [Just (NTValue (VString "nickname"))
   -- which has type Either a [Maybe Node]
-  -- Search c, returns [(key, result)]
   let kv = (\k -> (k, M.lookup k c)) <$> keys
 
   -- | Kind a cast for kv to get a proper type
@@ -97,12 +94,13 @@ getvals c = do
 getvals' :: (Text, Maybe Node)
          -> (String , Either (Maybe String) String)
 getvals' (a, b) = do
-  let a' = T.unpack a ++ ":"
+  let a' = T.unpack a
   let b' = case b of
              Just (NTValue (VString s)) -> Right $ T.unpack s
-             Just s                     -> Left $ Just "invalid value"
-             Nothing                    -> Left $ Just "(not found)"
+             Just s                     -> Left $ Just "value has invalid type"
+             Nothing                    -> Left $ Just "absent in config file"
   (a', b')
+
 
 validVal :: (String, Either (Maybe String) String) -> Bool
 validVal a =
@@ -110,8 +108,10 @@ validVal a =
     (_, Right _) -> True
     (_, Left _) -> False
 
+
+-- | Function that returns a string containing a reason, or nothing.
 unwrapValue :: (String, Either (Maybe String) b) -> String
 unwrapValue (a, b) =
   case (a, b) of
     (a, Left Nothing) -> a
-    (a, Left (Just b)) -> a ++ " " ++ b
+    (a, Left (Just b)) -> a ++ ": " ++ b
