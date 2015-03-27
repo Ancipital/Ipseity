@@ -1,0 +1,121 @@
+--- |   _   ___   __   ____  _  _____  _
+--- |  | | | |_) ( (` | |_  | |  | |  \ \_/
+--- |  |_| |_|   _)_) |_|__ |_|  |_|   |_|
+--- |
+
+This is Ipseity, an IRC framework.
+
+1.  Load the configuration file - mandatory. Ensures that all important
+    settings have been read and set.
+
+2.  Set up an initial selfhood called the 'ipseity' - a synonym.
+
+The ipseity of the client - driven either programatically (i.e. an ircbot)
+or by an intelligent being (i.e., an irc client) - is the total collection
+of distinguised branches of states.
+
+If we use the ircbot as an example, its ipseity at any point should or
+might contain the following information:
+
+    *) what the bot already knew about itself from the configuration file.
+
+    *) what the bot knows about its connection to the server, i.e. the
+       hostname, port, ssl or plain text, etc.
+
+    *) what the bot knows about itself, in a server context. Meaning its
+       user modes, away state, visibility.
+
+    *) what the bot knows about the channels it is in.
+
+
+STATES OF BEING
+
+There are two states of being: a construction state and a running state. The
+construction state, refered to as the Inception, is entered at startup and
+follows multiple stages of initialization.
+
+The second state is entered upon completion of the first and is called the
+Ipseity state. In this state, the bot will accept commands and become
+interactive.
+
+
+INCEPTION STATE
+
+As explained, The construction, or of an ipseity, occurs in stages.
+
+1. PRECEPTION STAGE
+
+The first stage is the 'precept' constructor. Its function is limited to
+reading the configuration file and turning it into data of type Precept. When
+succesful, it will complete by handing off this datatype to the second stage.
+
+2. INCEPTION STAGE
+
+The second stage is the 'inception' phase. It uses the values from Precept to
+connect to the defined server. Following the IRC protocol, once connected it
+will send to the server its password if there is one, followed by its chosen
+nickname, followed by its username and realname.
+
+From the information it receives back, the inception phase will construct the
+Incept datatype, containing everything we learned from what we received. The
+exact information will differ per server but at the very least we'll receive a
+greeting containing how it sees the client; what the server hostname is and
+which software it runs; when the server was created; and the available user and
+channel modes.
+
+
+        Modern irc servers send a lot more. For example, an Inspircd
+        2.0 server will send additional information via messages of a
+        "Numeric 004" type, which containing the maximum length of an
+        AWAY description; the style of upper/lowercase character
+        mapping; the maximum number of modes per line, and so on.
+
+        Note: the word Numeric refers to an IRC context; NOT to
+        Haskell's own Numeric data class!
+
+
+At this point we have the following pieces of information which
+forms the Incept datatype:
+
+     1) Preception information (p) i.e. the user supplied configuration;
+
+     2) An existing connection (c)
+
+     3) Info as was evaluated from the server (s).
+
+3. CONCEPTION STAGE
+
+This stage is the final stage. It will distinguish the received information
+into different 'concepts', where each concept can be described as "knowledge
+about a certain part of the current session". For example:
+
+    *)  A concept describing how the bot sees itself, e.g.  the preferred and
+        current nickname; the realname; the local time of when the connection
+        was established; the bot's own IP address; its current user modes; its
+        owner(s); ...
+
+    *)  A concept describing how the server sees the bot, e.g. the hostname it
+        displays on the bot's behalf; the bot's active usermodes; the away
+        state; ...
+
+    *)  A concept describing the server's identification, capabilities,
+        restrictions and environment;
+
+    *)  A concept, if applicable, of the network of which our server is a
+        node.
+
+Finally the conception stage will construct a list of handlers, where each
+handler has an arbitrary, specific function, e.g. responding to a query or
+command; reading from an RSS list; you name it.
+
+
+        Handlers are the things that give the bot its functionality
+        and responsiveness!
+
+
+With everything - the connection, concepts, and handlers - ready for use,
+inception is complete, thus switching over to the running state: Ipseity!
+
+To be described.
+
+-- vim: ts=4 sw=4 sts=4 et tw=79

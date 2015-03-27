@@ -1,0 +1,39 @@
+#---------------------------------------------------------------------
+# Source for these:
+#
+# https://github.com/github/gitignore/blob/master/Global/Vim.gitignore
+# https://github.com/github/gitignore/blob/master/Haskell.gitignore
+#---------------------------------------------------------------------
+
+#-----------------------
+# -- Vim Editor stuff --
+#-----------------------
+
+[._]*.s[a-w][a-z]
+[._]s[a-w][a-z]
+*.un~
+Session.vim
+.netrwhist
+*~
+
+
+#--------------------
+# -- Haskell stuff --
+#--------------------
+
+dist
+cabal-dev
+*.o
+*.hi
+*.chi
+*.chs.h
+*.dyn_o
+*.dyn_hi
+.virtualenv
+.hpc
+.hsenv
+.cabal-sandbox/
+cabal.sandbox.config
+*.prof
+*.aux
+*.hp
