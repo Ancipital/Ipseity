@@ -1,7 +1,7 @@
 --------------------------------------------------------------------------------
 module Ipseity.Types
   ( Err
-  , Precept
+  , Precept(..)
   ) where
 
 --------------------------------------------------------------------------------
@@ -21,6 +21,7 @@ import           System.Exit
 
 -- | Contains the nick, user, realname strings.
 data Precept = Precept String String String
+  deriving (Show)
 
 data Inception = Inception
 

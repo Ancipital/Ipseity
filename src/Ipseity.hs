@@ -53,6 +53,7 @@ ipseity c = do
 
   case i of
     Left err -> do
+      putStrLn "Error:"
       let errno  = ExitFailure (fst err)
       let errstr = snd err
       putStrLn errstr
@@ -60,25 +61,5 @@ ipseity c = do
       -- exitWith errno
 
     Right i' -> do
+      putStrLn "Ok:"
       putStrLn $ show i'
-      -- exitWith ExitSuccess
-
-
-    -- Right conf -> do
-    --   -- | Config was parsed, now check if it
-    --   -- actually contains what we need...
-    --   case withIpseity conf of
-    --     Left err -> do
-    --       -- | The config file is incomplete.
-    --       putStrLn $ snd err
-    --       putDshLn
-    --       exitWith $ fst err
-
-
-    --     Right p -> do
-    --       -- | p contains the minimum values
-    --       -- minimum options, parsed as a tree.
-    --       -- We'll just print it.
-    --       putStrLn "Config was parsed."
-    --       putStrLn $ show i
-
