@@ -21,7 +21,7 @@ import           Ipseity.Types
 
 --------------------------------------------------------------------------------
 
-incept :: FilePath -> IO (Either Err Precept)
+-- incept :: FilePath -> IO (Either Err [(String, String)])
 incept c = do
   p <- parseConf c
   case p of
@@ -33,11 +33,10 @@ incept c = do
       case getvals conf of
         Left err -> return $ Left err
 
-        Right p ->
-          let p' = snd <$> p
+        Right p -> do
           -- | p contains the minimum values
           -- minimum options, parsed as a tree.
-          return $ Right $ Precept p'!!0 p'!!1 p'!!2
+          return $ Right p
 
   -- Here we call createPrecept, it should give us a Precept value containing the
   -- nick, user and realname from the config.
