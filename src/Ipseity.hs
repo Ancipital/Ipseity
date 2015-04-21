@@ -36,7 +36,7 @@ ipseity c = do
   putDshLn
 
 
-  i <- incept c
+  i <- precept c
 
   case i of
     Left err -> do

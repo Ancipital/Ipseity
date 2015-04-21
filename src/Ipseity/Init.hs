@@ -2,7 +2,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 --------------------------------------------------------------------------------
 module Ipseity.Init
-  ( incept
+  ( precept
   , connectServer
   ) where
 --------------------------------------------------------------------------------
@@ -16,8 +16,8 @@ import           Ipseity.Types
 
 --------------------------------------------------------------------------------
 
-incept :: FilePath -> IO (Either Err Precept)
-incept c = do
+precept :: FilePath -> IO (Either Err Precept)
+precept c = do
   p <- createPreceptBase c
   case p of
     Left  err             -> return $ Left err

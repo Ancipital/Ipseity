@@ -4,7 +4,6 @@ module Ipseity.Types
   , PreceptBase
   , Precept(..)
   , preceptKeys
-  , inceptKeys
   ) where
 --------------------------------------------------------------------------------
 
@@ -13,7 +12,6 @@ import           Data.Text           (Text)
 import qualified Data.HashMap.Lazy   as HM (HashMap)
 
 preceptKeys = fmap T.pack ["nickname", "username", "realname", "server"]
-inceptKeys  = fmap T.pack ["hostname", "port", "ssl", "channels"]
 
 type PreceptBase = HM.HashMap Text String
 
