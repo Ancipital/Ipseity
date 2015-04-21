@@ -1,12 +1,14 @@
 --------------------------------------------------------------------------------
 module Ipseity.Init.Precept
-  ( createPrecept
+  ( createPreceptBase
+  , createPrecept
   , chkConf
   ) where
 --------------------------------------------------------------------------------
 
 import           Control.Applicative ((<*>), (<$>))
-import           Data.Either         (rights)
+import           Data.Either         (rights, isLeft)
+import           Data.Either.Utils   (fromLeft, fromRight, fromEither)
 import qualified Data.HashMap.Lazy   as HM (lookup, fromList)
 import           Data.Maybe
 import           Data.Text           (Text)
@@ -19,8 +21,8 @@ import           Ipseity.Types
 
 --------------------------------------------------------------------------------
 
-createPrecept :: FilePath -> IO (Either Err (Table, Precept))
-createPrecept c = do
+createPreceptBase :: FilePath -> IO (Either Err (Table, PreceptBase))
+createPreceptBase c = do
   p <- parseConf c
   case p of
     Left err -> return $ Left err
@@ -31,11 +33,11 @@ createPrecept c = do
       case chkConf conf preceptKeys of
         Left err -> return $ Left (1, show err)
 
-        Right precept -> do
+        Right preceptBase -> do
           -- | p contains the minimum values
           -- minimum options, parsed as a tree.
           -- let p' = createPrecept p
-          return $ Right $ (conf, HM.fromList precept)
+          return $ Right $ (conf, HM.fromList preceptBase)
 
 
 -- | Toml-parse a config and fully return it
@@ -123,4 +125,40 @@ unwrapValue (a, b) =
   case (a, b) of
     (a, Left Nothing)  -> T.unpack a
     (a, Left (Just b)) -> T.unpack a ++ ": " ++ b
+
+createPrecept :: PreceptBase -> Table -> Either Err Precept
+createPrecept preceptBase table = do
+  let lookup k = HM.lookup (T.pack k) table
+
+  let hnm = case lookup "hostname" of
+              Just (NTValue (VString a))  -> Right (T.unpack a)
+              otherwise                   -> Left ("hostname: should be of type String.")
+
+  let prt = case lookup "port" of
+              Just (NTValue (VInteger a)) -> Right (fromIntegral a)
+              otherwise                   -> Left ("port: should be of type Integer.")
+
+  let ssl = case lookup "ssl" of
+              Just (NTValue (VBoolean a)) -> Right a
+              otherwise                   -> Left ("ssl: should be a boolean.")
+
+  let chn = case lookup "channels" of
+              Just (NTValue (VString a))  -> Right (T.unpack a)
+              otherwise                   -> Left ("channels: should be of form '#chan1,#chan2' as a string.")
+
+  if isLeft hnm
+     then Left (1, fromLeft hnm)
+     else if isLeft prt
+     then Left (1, fromLeft prt)
+     else if isLeft ssl
+     then Left (1, fromLeft ssl)
+     else if isLeft chn
+     then Left (1, fromLeft chn)
+     else do
+       let servname = fromJust $ HM.lookup "server"   preceptBase
+       let nickname = fromJust $ HM.lookup "nickname" preceptBase
+       let realname = fromJust $ HM.lookup "realname" preceptBase
+       let username = fromJust $ HM.lookup "username" preceptBase
+
+       Right $ Precept nickname username realname servname (fromRight hnm) (fromRight prt) (fromRight ssl) (fromRight chn)
 

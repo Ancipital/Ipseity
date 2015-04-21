@@ -1,8 +1,8 @@
 --------------------------------------------------------------------------------
 module Ipseity.Types
   ( Err
-  , Precept
-  , Incept(..)
+  , PreceptBase
+  , Precept(..)
   , preceptKeys
   , inceptKeys
   ) where
@@ -15,17 +15,18 @@ import qualified Data.HashMap.Lazy   as HM (HashMap)
 preceptKeys = fmap T.pack ["nickname", "username", "realname", "server"]
 inceptKeys  = fmap T.pack ["hostname", "port", "ssl", "channels"]
 
-type Precept = HM.HashMap Text String
+type PreceptBase = HM.HashMap Text String
 
-data Incept = Incept
-  { ircPrecept :: Precept
-  , ircServer  :: String
-  , ircPort    :: Int
-  , ircSSL     :: Bool
-  , ircChans   :: String
+data Precept = Precept
+  { ircNick    :: String
+  , ircUser    :: String
+  , ircName    :: String
+  , ircSrvName :: String
+  , ircSrvHost :: String
+  , ircSrvPort :: Int
+  , ircSrvSSL  :: Bool
+  , ircSrvChn  :: String
   } deriving (Eq, Show)
-
-data Inception = Inception
 
 -- | Contains an error integer and a message
 type Err = (Int, String)
