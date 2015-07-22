@@ -49,22 +49,15 @@ instance FromJSON ServerConfig where
                  <*> v .: "channels"
 
 instance ToJSON ServerConfig where
-  toJSON (ServerConfig nickname 
-                       username
-                       realname
-                       serverName
-                       serverHost
-                       port
-                       ssl
-                       channels) = 
-    object [ "nickname"   .= nickname
-           , "username"   .= username
-           , "realname"   .= realname
-           , "serverName" .= serverName
-           , "serverHost" .= serverHost
-           , "port"       .= port 
-           , "ssl"        .= ssl
-           , "channels"   .= channels
+  toJSON c = 
+    object [ "nickname"   .= ircNick c
+           , "username"   .= ircUser c
+           , "realname"   .= ircName c
+           , "serverName" .= ircSrvName c
+           , "serverHost" .= ircSrvHost c
+           , "port"       .= ircSrvPort c 
+           , "ssl"        .= ircSrvSSL c
+           , "channels"   .= ircSrvChn c
            ]
 
 
