@@ -1,10 +1,23 @@
-import Ipseity.Ipseity
+import qualified Data.ByteString.Lazy as B
+import           Ipseity.Ipseity
+import           Data.Aeson
+import           Control.Applicative ((<$>), (<*>))
+import           Ipseity.Types
+
+jsonFile :: FilePath
+jsonFile = "test.json"
+
+getJSON :: IO B.ByteString
+getJSON = B.readFile jsonFile
 
 main :: IO ()
-main = ipseity "test.ini"
-
---wrong    = ipseity "wrong.ini"
---wrong2   = ipseity "wrong2.ini"
---wrong3   = ipseity "wrong3.ini"
---wrong4   = ipseity "wrong4.ini"
---notfound = ipseity "nofile.ini"
+main = do
+ -- Get JSON data and decode it
+ d <- (eitherDecode <$> getJSON) :: IO (Either String [ServerConfig])
+ -- If d is Left, the JSON was malformed.
+ -- In that case, we report the error.
+ -- Otherwise, we perform the operation of
+ -- our choice. In this case, just print it.
+ case d of
+  Left err -> putStrLn err
+  Right ps -> print ps
