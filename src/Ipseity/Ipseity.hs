@@ -50,3 +50,23 @@ ipseity c = do
     Right i' -> connectServer $ server i'
       -- putStrLn "Ok:"
       -- putStrLn $ show i'
+
+
+-- | Right now this just displays a bunch of results
+-- from a correctly parsed config file.
+connectServer :: ServerConfig -> IO ()
+connectServer c = do
+  putStrLn $ "Connecting to server: " ++ servername
+  putStrLn $ "Hostname: " ++ server ++ ":" ++ (show port)
+  putStrLn $ "SSL: " ++ show ssl
+  putStrLn $ "Nickname: " ++ nickname
+  putStrLn $ "Username: " ++ username
+  putStrLn $ "Realname: " ++ realname
+    where
+  servername = ircSrvName c
+  server     = ircSrvHost c
+  port       = ircSrvPort c
+  ssl        = ircSrvSSL c
+  nickname   = ircNick c
+  username   = ircUser c
+  realname   = ircName c

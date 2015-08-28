@@ -3,7 +3,6 @@
 --------------------------------------------------------------------------------
 module Ipseity.Precept
   ( precept
-  , connectServer
   , Err
   , Precept(..)
   , ServerConfig(..)
@@ -75,22 +74,3 @@ precept f = do
   case p of
     Left err      -> return $ Left (1, "Failed to load servers configuration: " ++ err)
     Right config -> return $ Right (Precept config)
-
--- | Right now this just displays a bunch of results
--- from a correctly parsed config file.
-connectServer :: ServerConfig -> IO ()
-connectServer c = do
-  putStrLn $ "Connecting to server: " ++ servername
-  putStrLn $ "Hostname: " ++ server ++ ":" ++ (show port)
-  putStrLn $ "SSL: " ++ show ssl
-  putStrLn $ "Nickname: " ++ nickname
-  putStrLn $ "Username: " ++ username
-  putStrLn $ "Realname: " ++ realname
-    where
-  servername = ircSrvName c
-  server     = ircSrvHost c
-  port       = ircSrvPort c
-  ssl        = ircSrvSSL c
-  nickname   = ircNick c
-  username   = ircUser c
-  realname   = ircName c
