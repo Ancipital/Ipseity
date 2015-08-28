@@ -11,15 +11,16 @@ module Ipseity.Precept
 --------------------------------------------------------------------------------
 
 import qualified Data.ByteString.Lazy as B
-import           Control.Applicative ((<*>), (<$>))
+import qualified Data.Text            as T
+import           Control.Applicative  ((<*>), (<$>))
+import           Control.Monad        (mzero)
 import           Data.Aeson
 import           Data.Maybe
-import qualified Data.Text           as T
 
 --------------------------------------------------------------------------------
 
 data Precept = Precept
-  { servers  :: [ServerConfig]
+  { server  :: ServerConfig
   } deriving (Eq, Show)
 
 data ServerConfig = ServerConfig
@@ -36,41 +37,44 @@ data ServerConfig = ServerConfig
 -- | Contains an error integer and a message
 type Err = (Int, String)
 
-
 instance FromJSON ServerConfig where
-  parseJSON (Object v) = 
-    ServerConfig <$> v .: "nickname"
-                 <*> v .: "username"
-                 <*> v .: "realname"
-                 <*> v .: "serverName"
-                 <*> v .: "serverHost"
-                 <*> v .: "port"
-                 <*> v .: "ssl"
-                 <*> v .: "channels"
+  parseJSON (Object o) = 
+    ServerConfig <$> o .: "nickname"
+                 <*> o .: "username"
+                 <*> o .: "realname"
+                 <*> ((o .: "server") >>= (.: "name"))
+                 <*> ((o .: "server") >>= (.: "hostname"))
+                 <*> ((o .: "server") >>= (.: "port"))
+                 <*> ((o .: "server") >>= (.: "ssl"))
+                 <*> ((o .: "server") >>= (.: "channels"))
+
+  parseJSON _          = mzero
 
 instance ToJSON ServerConfig where
   toJSON c = 
     object [ "nickname"   .= ircNick c
            , "username"   .= ircUser c
            , "realname"   .= ircName c
-           , "serverName" .= ircSrvName c
-           , "serverHost" .= ircSrvHost c
-           , "port"       .= ircSrvPort c 
-           , "ssl"        .= ircSrvSSL c
-           , "channels"   .= ircSrvChn c
+           , "server"     .= server
            ]
-
+    where 
+      server = 
+        object [ "name"       .= ircSrvName c
+               , "hostname"   .= ircSrvHost c
+               , "port"       .= ircSrvPort c 
+               , "ssl"        .= ircSrvSSL c
+               , "channels"   .= ircSrvChn c
+               ]
 
 getJSON :: FilePath -> IO B.ByteString
 getJSON f = B.readFile f
 
 precept :: FilePath -> IO (Either Err Precept)
 precept f = do
-  p <- (eitherDecode <$> (getJSON f)) :: IO (Either String [ServerConfig])
+  p <- (eitherDecode <$> (getJSON f)) :: IO (Either String ServerConfig)
   case p of
     Left err      -> return $ Left (1, "Failed to load servers configuration: " ++ err)
-    Right configs -> return $ Right (Precept configs)
-
+    Right config -> return $ Right (Precept config)
 
 -- | Right now this just displays a bunch of results
 -- from a correctly parsed config file.

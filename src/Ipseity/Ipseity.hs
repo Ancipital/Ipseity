@@ -47,6 +47,6 @@ ipseity c = do
       putHdrLn
       exitWith errno
 
-    Right i' -> connectServer (head $ servers i')
+    Right i' -> connectServer $ server i'
       -- putStrLn "Ok:"
       -- putStrLn $ show i'
