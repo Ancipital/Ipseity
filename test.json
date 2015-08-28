@@ -1,22 +1,15 @@
-[
-	{
-		"nickname": "Ipsy",
-		"username": "ipseity",
-		"realname": "voidzero & co. Haskell bot",
-		"serverName": "zeronode",
-		"serverHost": "zeronode",
-		"port": 6697,
-		"ssl": true,
-		"channels": ["#v0", "#Hive5"]
-	},
-	{
-		"nickname": "Ipsy",
-		"username": "ipseity",
-		"realname": "voidzero & co. Haskell bot",
-		"serverName": "zeronode",
-		"serverHost": "zeronode",
-		"port": 6697,
-		"ssl": true,
-		"channels": ["#v0", "#Hive5"]
-	}
-]
+{
+    "nickname": "Ipsy",
+    "username": "ipseity",
+    "realname": "voidzero & co. Haskell bot",
+    "server": {
+        "name": "",
+        "hostname": "",
+        "port": 6697,
+        "ssl": true,
+        "channels": [
+            "#v0",
+            "#Hive5"
+        ]
+    }
+}
