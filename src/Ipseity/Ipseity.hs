@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------------
-module Ipseity
+module Ipseity.Ipseity
   ( ipseity
   ) where
 --------------------------------------------------------------------------------
@@ -11,7 +11,7 @@ import           System.IO      hiding (putStrLn)
 import           System.Exit
 --------------------------------------------------------------------------------
 
-import           Ipseity.Init
+import           Ipseity.Precept
 --------------------------------------------------------------------------------
 
 -- | Visual treats
@@ -47,6 +47,6 @@ ipseity c = do
       putHdrLn
       exitWith errno
 
-    Right i' -> connectServer i'
+    Right i' -> connectServer (head $ servers i')
       -- putStrLn "Ok:"
       -- putStrLn $ show i'
