@@ -4,22 +4,30 @@
 module Ipseity.Precept
   ( precept
   , connectServer
+  , CfType(..)
   , Err
   , Precept(..)
   , ServerConfig(..)
   ) where
 --------------------------------------------------------------------------------
 
-import qualified Data.ByteString.Lazy as B
-import           Control.Applicative ((<*>), (<$>))
+import           Control.Applicative   ((<*>), (<$>))
+import qualified Data.ByteString.Lazy  as B
 import           Data.Aeson
 import           Data.Maybe
-import qualified Data.Text           as T
+import           Data.Text             (Text)
+import qualified Data.Text             as T
+import           Data.Text.IO          as TIO (readFile)
+import           Text.Toml             -- (parseTomlDoc)
 
 --------------------------------------------------------------------------------
 
+--------------------------------------------------------------------------------
+
+data CfType = TOML | JSON
+
 data Precept = Precept
-  { servers  :: [ServerConfig]
+  { servers  :: ServerConfig
   } deriving (Eq, Show)
 
 data ServerConfig = ServerConfig
@@ -38,7 +46,7 @@ type Err = (Int, String)
 
 
 instance FromJSON ServerConfig where
-  parseJSON (Object v) = 
+  parseJSON (Object v) =
     ServerConfig <$> v .: "nickname"
                  <*> v .: "username"
                  <*> v .: "realname"
@@ -49,13 +57,13 @@ instance FromJSON ServerConfig where
                  <*> v .: "channels"
 
 instance ToJSON ServerConfig where
-  toJSON c = 
+  toJSON c =
     object [ "nickname"   .= ircNick c
            , "username"   .= ircUser c
            , "realname"   .= ircName c
            , "serverName" .= ircSrvName c
            , "serverHost" .= ircSrvHost c
-           , "port"       .= ircSrvPort c 
+           , "port"       .= ircSrvPort c
            , "ssl"        .= ircSrvSSL c
            , "channels"   .= ircSrvChn c
            ]
@@ -64,11 +72,29 @@ instance ToJSON ServerConfig where
 getJSON :: FilePath -> IO B.ByteString
 getJSON f = B.readFile f
 
-precept :: FilePath -> IO (Either Err Precept)
-precept f = do
-  p <- (eitherDecode <$> (getJSON f)) :: IO (Either String [ServerConfig])
+
+-- | Create a precept (or an error) from either a toml
+-- or a json config file.
+precept :: CfType -> FilePath -> IO (Either Err Precept)
+-- Parses a toml config file
+precept TOML f = do
+  tf <- TIO.readFile f
+  case parseTomlDoc "" tf of
+    Left  err  -> return $ Left (22, "Error reading " ++ f ++ " " ++ show err)
+    Right toml -> do
+      -- encode the toml document to plain json
+      let enc  = encode (toJSON toml)
+      -- decode the json to ServerConfig (or String in case of errors)
+      let edec = (eitherDecode enc :: Either String ServerConfig)
+      case edec of
+        Left err   -> return $ Left (1,  "Error parsing " ++ f ++ " " ++ show err)
+        Right conf -> return $ Right (Precept conf)
+
+-- Parses a json config file
+precept JSON f = do
+  p <- (eitherDecode <$> (getJSON f)) :: IO (Either String ServerConfig)
   case p of
-    Left err      -> return $ Left (1, "Failed to load servers configuration: " ++ err)
+    Left err      -> return $ Left  (22, "Failed to load servers configuration: " ++ err)
     Right configs -> return $ Right (Precept configs)
 
 

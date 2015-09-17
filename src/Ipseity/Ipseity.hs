@@ -4,10 +4,10 @@ module Ipseity.Ipseity
   ) where
 --------------------------------------------------------------------------------
 
-import           Data.Text      (Text)
-import qualified Data.Text      as T
-import qualified Data.Text.IO   as D (putStrLn)
-import           System.IO      hiding (putStrLn)
+import           Data.Text        (Text)
+import qualified Data.Text        as T
+import qualified Data.Text.IO     as D (putStrLn)
+import           System.IO        hiding (putStrLn)
 import           System.Exit
 --------------------------------------------------------------------------------
 
@@ -28,15 +28,15 @@ putDshLn = putStrLn (nDash '-' 30)
 putHdrLn :: IO ()
 putHdrLn = putStrLn (nDash '=' 30)
 
-ipseity :: FilePath -> IO ()
-ipseity c = do
+ipseity :: CfType -> FilePath -> IO ()
+ipseity t c = do
   putLn
   putHdrLn
   putStrLn "Loading Ipseity..."
   putDshLn
 
 
-  i <- precept c
+  i <- precept t c
 
   case i of
     Left err -> do
@@ -47,6 +47,6 @@ ipseity c = do
       putHdrLn
       exitWith errno
 
-    Right i' -> connectServer (head $ servers i')
+    Right i' -> connectServer $ servers i'
       -- putStrLn "Ok:"
       -- putStrLn $ show i'

@@ -1,20 +1,22 @@
 -- vim: ts=2 sw=2 sts=2 et conceallevel=0
 --------------------------------------------------------------------------------
 
+module Ipseity.Cmdline
+  ( startArgs
+  ) where
+--------------------------------------------------------------------------------
+
 import           System.Exit         (ExitCode(..), exitWith)
 import           Options.Applicative
-
+import           Ipseity.Ipseity
+import           Ipseity.Precept (CfType(..))
 --------------------------------------------------------------------------------
 
 -- | Options for the command line
 -- cfType: -t on the cli, the type of config (toml, json, others one day)
 -- cfFile: cli argument, the actual configuration file
-data CmdOpts = CmdOpts
-  { cfType :: String
-  , cfFile :: FilePath
-  }
+data CmdOpts = CmdOpts String FilePath
   deriving (Show)
-
 
 -- | Command line parser
 cmdOpts :: Parser CmdOpts
@@ -36,10 +38,11 @@ greet (CmdOpts _      b) = do
   putStrLn $ "Error: Filetype needs to be either \"toml\" or \"json\"."
   exitWith $ ExitFailure 1
 
+parsedCmd (CmdOpts "toml" file) = ipseity TOML file
+parsedCmd (CmdOpts "json" file) = ipseity JSON file
 
--- | This probably needs to go elsewhere
--- or maybe main needs to be renamed.
-main = execParser opts >>= greet
+-- | Parse the arguments from the command line
+startArgs = execParser opts >>= parsedCmd
   where
     opts = info (helper <*> cmdOpts)
          $ ( progDesc "Not quite an IRC bot... YET"
